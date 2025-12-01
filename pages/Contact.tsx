@@ -22,6 +22,7 @@ const Contact: React.FC = () => {
   const [programOptions, setProgramOptions] = useState<string[]>([]);
   const [scheduleMap, setScheduleMap] = useState<Record<string, string[]>>({});
   const [priceMap, setPriceMap] = useState<Record<string, number>>({});
+  const [categoryMap, setCategoryMap] = useState<Record<string, string>>({}); // Maps Program Title -> Category (MINI, OTHER, ONLINE)
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   
   // Form State
@@ -54,6 +55,7 @@ const Contact: React.FC = () => {
             const options: string[] = [];
             const schedules: Record<string, string[]> = {};
             const prices: Record<string, number> = {};
+            const categories: Record<string, string> = {};
 
             const parsePrice = (p: string) => {
               if (!p) return 0;
@@ -65,6 +67,7 @@ const Contact: React.FC = () => {
             mini.data?.forEach(p => {
                 options.push(p.title);
                 prices[p.title] = parsePrice(p.price);
+                categories[p.title] = 'MINI';
                 if (p.available_dates && p.available_dates.length > 0) {
                     schedules[p.title] = p.available_dates;
                 }
@@ -74,6 +77,7 @@ const Contact: React.FC = () => {
             other.data?.forEach(p => {
                 options.push(p.title);
                 prices[p.title] = parsePrice(p.price);
+                categories[p.title] = 'OTHER';
                 if (p.available_dates && p.available_dates.length > 0) {
                     schedules[p.title] = p.available_dates;
                 }
@@ -84,6 +88,7 @@ const Contact: React.FC = () => {
                 const title = `Online: ${p.title}`;
                 options.push(title);
                 prices[title] = parsePrice(p.price);
+                categories[title] = 'ONLINE';
                 schedules[title] = ['Immediate Access / Self-Paced'];
             });
             
@@ -91,11 +96,13 @@ const Contact: React.FC = () => {
             const bundleTitle = 'Online: All 3 Courses Bundle';
             options.push(bundleTitle);
             prices[bundleTitle] = 35;
+            categories[bundleTitle] = 'BUNDLE';
             schedules[bundleTitle] = ['Immediate Access / Self-Paced'];
 
             setProgramOptions(options);
             setScheduleMap(schedules);
             setPriceMap(prices);
+            setCategoryMap(categories);
             
             // Set default program if none selected
             if (!formData.program && options.length > 0) {
@@ -181,8 +188,10 @@ const Contact: React.FC = () => {
 
       if (regError) throw regError;
 
-      // 2. Deduct Credits (Only if logged in and it's a paid program)
+      // 2. Handle Payment Logic (If logged in & Paid)
       if (user && currentPrice > 0) {
+        
+        // A. Deduct Credits
         const { error: txError } = await supabase
             .from('credit_transactions')
             .insert([{
@@ -192,10 +201,22 @@ const Contact: React.FC = () => {
                 note: `Payment for ${formData.program}`
             }]);
         
-        if (txError) {
-            console.error("Failed to record transaction", txError);
-            // Warning: Transaction mismatch possible here, but acceptable for this scope.
-        }
+        if (txError) console.error("Failed to record transaction", txError);
+
+        // B. Record Sales Ledger (New)
+        const category = categoryMap[formData.program] || 'OTHER';
+        const { error: salesError } = await supabase
+            .from('sales_ledger')
+            .insert([{
+                user_email: user.email,
+                program_title: formData.program,
+                category: category,
+                amount: currentPrice,
+                note: 'Paid via Credit Wallet'
+            }]);
+
+        if (salesError) console.error("Failed to record sale ledger", salesError);
+        
         await refreshBalance();
       }
 

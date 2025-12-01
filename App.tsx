@@ -1,6 +1,6 @@
 
 import React, { useState, createContext, useContext, useEffect } from 'react';
-import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, useLocation, Link } from 'react-router-dom';
 import { TranslationData, Language, User } from './types';
 import { TRANSLATIONS } from './constants';
 import Navbar from './components/Navbar';
@@ -9,11 +9,16 @@ import Home from './pages/Home';
 import MiniProgram from './pages/MiniProgram';
 import OtherPrograms from './pages/OtherPrograms';
 import OnlineCourses from './pages/OnlineCourses';
+import FreeCourses from './pages/FreeCourses';
+import Community from './pages/Community';
 import About from './pages/About';
 import FAQ from './pages/FAQ';
 import Contact from './pages/Contact';
 import SignIn from './pages/SignIn';
 import Profile from './pages/Profile';
+import Trainers from './pages/Trainers';
+import LearningClassroom from './pages/LearningClassroom';
+import { User as UserIcon } from 'lucide-react';
 
 // Language Context
 interface LangContextType {
@@ -99,14 +104,27 @@ const App: React.FC = () => {
                 <Route path="/mini" element={<MiniProgram />} />
                 <Route path="/other" element={<OtherPrograms />} />
                 <Route path="/online" element={<OnlineCourses />} />
+                <Route path="/free" element={<FreeCourses />} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/trainers" element={<Trainers />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/learning/:courseId" element={<LearningClassroom />} />
               </Routes>
             </main>
             <Footer />
+            
+            {/* Fixed "Our Trainers" Button */}
+            <Link 
+              to="/trainers" 
+              className="fixed bottom-6 right-6 z-50 bg-red-600 text-white px-6 py-3 rounded-full font-bold shadow-2xl hover:bg-red-700 transition-all flex items-center gap-2 hover:scale-105 border-2 border-white group"
+            >
+              <UserIcon size={20} className="group-hover:animate-bounce" />
+              {t.trainers.title}
+            </Link>
           </div>
         </HashRouter>
       </AuthContext.Provider>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLang, useAuth } from '../App';
 import Section from '../components/ui/Section';
 import { useNavigate } from 'react-router-dom';
-import { Phone, Mail, LogOut, CheckCircle, Calendar, Loader2, BookOpen, Video, Star, Zap, Search, Wallet, TrendingUp, Plus } from 'lucide-react';
+import { Phone, Mail, LogOut, CheckCircle, Calendar, Loader2, BookOpen, Video, Star, Zap, Search, Wallet, TrendingUp, Plus, PlayCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { CreditTransaction } from '../types';
 import { useCreditBalance } from '../lib/hooks';
@@ -17,6 +17,7 @@ interface DashboardItem {
   description: string;
   isEnrolled: boolean;
   enrollmentData: any | null;
+  videoUrl?: string; // New: For playing course content
 }
 
 const Profile: React.FC = () => {
@@ -29,7 +30,7 @@ const Profile: React.FC = () => {
   const [dashboardItems, setDashboardItems] = useState<DashboardItem[]>([]);
   const [transactions, setTransactions] = useState<CreditTransaction[]>([]);
   const [loading, setLoading] = useState(true);
-
+  
   useEffect(() => {
     if (!user) {
       navigate('/signin');
@@ -59,16 +60,18 @@ const Profile: React.FC = () => {
         const myTransactions = creditData as CreditTransaction[] || [];
         setTransactions(myTransactions);
 
-        // 3. Fetch All Available Programs (MINI, OTHER, ONLINE)
-        const [miniRes, otherRes, onlineRes] = await Promise.all([
+        // 3. Fetch All Available Programs (MINI, OTHER, ONLINE, FREE)
+        const [miniRes, otherRes, onlineRes, freeRes] = await Promise.all([
             supabase.from('programs_mini').select('*'),
             supabase.from('programs_other').select('*'),
-            supabase.from('courses_online').select('*')
+            supabase.from('courses_online').select('*'),
+            supabase.from('courses_free').select('*')
         ]);
 
         const miniData = miniRes.data || [];
         const otherData = otherRes.data || [];
         const onlineData = onlineRes.data || [];
+        const freeData = freeRes.data || [];
 
         // 4. Normalize them into DashboardItem shape
         const allOfferings: DashboardItem[] = [];
@@ -83,7 +86,8 @@ const Profile: React.FC = () => {
                 icon: p.title.includes('Night') ? <Star className="text-blue-500" /> : <Star className="text-yellow-500" />,
                 description: p.description || 'Intensive Workshop',
                 isEnrolled: false,
-                enrollmentData: null
+                enrollmentData: null,
+                videoUrl: p.video_url
             });
         });
 
@@ -97,7 +101,8 @@ const Profile: React.FC = () => {
                 icon: p.title.includes('VIP') ? <Star className="text-red-500" fill="currentColor" /> : <Zap className="text-purple-500" />,
                 description: p.description || 'Advanced Program',
                 isEnrolled: false,
-                enrollmentData: null
+                enrollmentData: null,
+                videoUrl: p.video_url
             });
         });
 
@@ -111,7 +116,23 @@ const Profile: React.FC = () => {
                 icon: <Video className="text-emerald-500" />,
                 description: p.description || 'Self-paced course',
                 isEnrolled: false,
-                enrollmentData: null
+                enrollmentData: null,
+                videoUrl: p.video_url
+            });
+        });
+
+        // Process FREE
+        freeData.forEach(p => {
+            allOfferings.push({
+                id: `free-${p.id}`,
+                title: p.title,
+                type: 'Free Course',
+                price: 'Free',
+                icon: <PlayCircle className="text-blue-500" />,
+                description: p.description || 'Free training video',
+                isEnrolled: false,
+                enrollmentData: null,
+                videoUrl: p.video_url // Critical for free courses
             });
         });
 
@@ -161,6 +182,11 @@ const Profile: React.FC = () => {
 
     fetchData();
   }, [user, navigate]);
+
+  const handleStartLearning = (item: DashboardItem) => {
+    // Navigate to dedicated classroom page
+    navigate(`/learning/${item.id}`);
+  };
 
   if (!user) return null;
 
@@ -287,15 +313,25 @@ const Profile: React.FC = () => {
 
                                 {/* Enrolled Details */}
                                 <div className="mt-auto pt-4 border-t border-zinc-50">
-                                    <div className="bg-green-50/50 rounded-lg p-3">
+                                    <div className="bg-green-50/50 rounded-lg p-3 mb-3">
                                         <p className="text-xs text-green-800 font-semibold mb-1 flex items-center gap-2">
                                             <Calendar size={12} />
-                                            Training Date/Info:
+                                            Enrolled:
                                         </p>
                                         <p className="text-sm font-bold text-zinc-800">
-                                            {item.enrollmentData?.preferred_date || 'Schedule Pending'}
+                                            {new Date(item.enrollmentData?.created_at).toLocaleDateString()}
                                         </p>
                                     </div>
+                                    
+                                    {/* Action Button: Start Learning */}
+                                    {item.videoUrl && (
+                                      <button 
+                                        onClick={() => handleStartLearning(item)}
+                                        className="w-full bg-zinc-900 text-white py-2 rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-black transition-colors"
+                                      >
+                                        <PlayCircle size={16} /> Start Learning
+                                      </button>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -318,10 +354,10 @@ const Profile: React.FC = () => {
                                 View MINI Programs
                             </button>
                             <button 
-                                onClick={() => navigate('/online')}
-                                className="px-6 py-3 bg-white border border-zinc-300 text-zinc-900 rounded-xl font-bold hover:bg-zinc-50 transition-colors"
+                                onClick={() => navigate('/free')}
+                                className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors"
                             >
-                                Browse Online Courses
+                                Free Courses
                             </button>
                         </div>
                     </div>

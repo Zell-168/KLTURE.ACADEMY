@@ -1,12 +1,11 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLang } from '../App';
 import Section from '../components/ui/Section';
 import { TRAINERS } from '../constants';
 import { Link, useNavigate } from 'react-router-dom';
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Loader2, Wallet } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { DbMiniProgram } from '../types';
+import { DbMiniProgram, DbTrainer } from '../types';
 import VideoPlayer from '../components/ui/VideoPlayer';
 import BannerCarousel from '../components/ui/BannerCarousel';
 
@@ -14,34 +13,64 @@ const MiniProgram: React.FC = () => {
   const { t } = useLang();
   const navigate = useNavigate();
   const [programs, setPrograms] = useState<DbMiniProgram[]>([]);
+  const [allTrainers, setAllTrainers] = useState<DbTrainer[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPrograms = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const { data, error } = await supabase
+        // Fetch Programs with Assigned Trainers joined
+        // Note: This relies on the table `mini_program_trainers` existing and FKs set up.
+        // If query fails (table missing), we catch and use fallback.
+        const { data: progData, error: progError } = await supabase
           .from('programs_mini')
-          .select('*')
+          .select(`
+            *,
+            mini_program_trainers (
+              trainers ( * )
+            )
+          `)
           .order('id', { ascending: true });
         
-        if (error) throw error;
-        if (data) setPrograms(data);
+        if (progError) throw progError;
+        if (progData) setPrograms(progData);
+
+        // Fetch All Trainers (as fallback or for general use)
+        const { data: trainerData } = await supabase
+          .from('trainers')
+          .select('*');
+        
+        if (trainerData && trainerData.length > 0) {
+           setAllTrainers(trainerData);
+        } else {
+           // Fallback to static if DB is empty
+           const staticFallback: DbTrainer[] = TRAINERS.map((t, i) => ({
+             id: i,
+             name: t.name,
+             role: t.role,
+             image_url: t.image,
+             description: "Expert Trainer",
+             created_at: new Date().toISOString()
+           }));
+           setAllTrainers(staticFallback);
+        }
+
       } catch (err) {
-        console.error('Error fetching MINI programs:', err);
+        console.error('Error fetching data:', err);
+        // Fallback fetch if the JOIN query failed (e.g. table doesn't exist yet)
+        const { data: simpleProgData } = await supabase.from('programs_mini').select('*');
+        if (simpleProgData) setPrograms(simpleProgData);
       } finally {
         setLoading(false);
       }
     };
-    fetchPrograms();
+    fetchData();
   }, []);
 
   const handleRegister = (program: string) => {
     navigate('/contact', { state: { selectedProgram: program } });
   };
-
-  // Static trainers for display (could also be moved to DB if needed later)
-  const weekendTrainers = TRAINERS.filter(tr => ['Sopheng', 'Visal', 'Siengmeng'].includes(tr.name));
-  const nightTrainers = TRAINERS.filter(tr => ['Kimly', 'Visal', 'Siengmeng'].includes(tr.name));
 
   return (
     <div>
@@ -83,10 +112,23 @@ const MiniProgram: React.FC = () => {
             const checkColor = isDark ? "text-green-400" : "text-green-500";
             const listItemColor = isDark ? "text-zinc-300" : "text-zinc-700";
             const btnClass = isDark
-                ? "w-full bg-white text-black py-4 rounded-xl font-bold text-lg hover:bg-zinc-200 transition-colors"
-                : "w-full bg-red-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-red-700 transition-colors shadow-lg shadow-red-600/20";
+                ? "w-full bg-white text-black py-4 rounded-xl font-bold text-lg hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
+                : "w-full bg-red-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-red-700 transition-colors shadow-lg shadow-red-600/20 flex items-center justify-center gap-2";
             
-            const currentTrainers = idx === 0 ? weekendTrainers : nightTrainers;
+            // Determine Trainers to Show
+            let currentTrainers: DbTrainer[] = [];
+            
+            if (prog.mini_program_trainers && prog.mini_program_trainers.length > 0) {
+              // 1. Use assigned trainers from DB
+              currentTrainers = prog.mini_program_trainers.map((item: any) => item.trainers).filter(Boolean);
+            } else {
+              // 2. Fallback logic if no assignment in DB
+              // Assign based on index for variety if allTrainers exists
+              if (allTrainers.length > 0) {
+                 if (idx === 0) currentTrainers = allTrainers.slice(0, 3); // First 3
+                 else currentTrainers = allTrainers.slice(1, 4); // Offset
+              }
+            }
 
             return (
                 <Section key={prog.id} id={`program-${prog.id}`} className={idx !== 0 ? "pt-0" : ""}>
@@ -122,15 +164,26 @@ const MiniProgram: React.FC = () => {
                             </ul>
                         </div>
                         <div>
+                            {/* Meet The Trainers Section */}
                             <h3 className={`font-bold text-lg mb-4 border-b ${isDark ? 'border-zinc-800' : 'pb-2'}`}>{t.mini.trainerSectionTitle}</h3>
-                            <div className="flex gap-4 mb-8">
-                                {currentTrainers.map((tr, i) => (
-                                    <div key={i} className="text-center">
-                                        <img src={tr.image} alt={tr.name} className={`w-16 h-16 rounded-full mx-auto mb-2 object-cover ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
-                                        <p className={`text-xs font-bold ${isDark ? 'text-zinc-300' : ''}`}>{tr.name}</p>
-                                    </div>
-                                ))}
-                            </div>
+                            {currentTrainers.length > 0 ? (
+                                <div className="flex flex-wrap gap-4 mb-8">
+                                    {currentTrainers.map((tr, i) => (
+                                        <div key={i} className="text-center group">
+                                            <div className="w-16 h-16 rounded-full mx-auto mb-2 overflow-hidden border-2 border-transparent group-hover:border-red-500 transition-all">
+                                                <img 
+                                                    src={tr.image_url} 
+                                                    alt={tr.name} 
+                                                    className={`w-full h-full object-cover ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} 
+                                                />
+                                            </div>
+                                            <p className={`text-xs font-bold ${isDark ? 'text-zinc-300' : ''}`}>{tr.name}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className={`text-sm mb-8 italic ${listItemColor}`}>Trainers to be announced.</p>
+                            )}
                             
                             {prog.receive_list && prog.receive_list.length > 0 && (
                                 <>
@@ -150,7 +203,8 @@ const MiniProgram: React.FC = () => {
                                 onClick={() => handleRegister(prog.title)}
                                 className={btnClass}
                             >
-                                Register Now
+                                <Wallet size={20} />
+                                {t.nav.register}
                             </button>
                         </div>
                         </div>

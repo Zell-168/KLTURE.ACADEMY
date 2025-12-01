@@ -15,6 +15,15 @@ export interface Course {
 }
 
 // Supabase Table Types
+export interface DbTrainer {
+  id: number;
+  name: string;
+  role: string;
+  description: string;
+  image_url: string;
+  created_at?: string;
+}
+
 export interface DbOnlineCourse {
   id: number;
   title: string;
@@ -22,6 +31,20 @@ export interface DbOnlineCourse {
   description: string;
   video_url?: string;
   image_url?: string;
+  // Joined Data
+  online_course_trainers?: {
+    trainers: DbTrainer;
+  }[];
+}
+
+export interface DbFreeCourse {
+  id: number;
+  title: string;
+  description: string;
+  trainer_name: string;
+  video_url: string;
+  image_url?: string;
+  created_at?: string;
 }
 
 export interface DbOtherProgram {
@@ -33,6 +56,10 @@ export interface DbOtherProgram {
   image_url?: string;
   trainers_count?: string;
   available_dates?: string[];
+  // Joined Data
+  other_program_trainers?: {
+    trainers: DbTrainer;
+  }[];
 }
 
 export interface DbMiniProgram {
@@ -46,6 +73,20 @@ export interface DbMiniProgram {
   learn_list?: string[];
   receive_list?: string[];
   available_dates?: string[];
+  // Joined Data
+  mini_program_trainers?: {
+    trainers: DbTrainer;
+  }[];
+}
+
+export interface SalesRecord {
+  id: number;
+  created_at: string;
+  user_email: string;
+  program_title: string;
+  category: 'MINI' | 'OTHER' | 'ONLINE' | 'BUNDLE';
+  amount: number;
+  note?: string;
 }
 
 export interface ProgramDetails {
@@ -83,12 +124,20 @@ export interface CreditTransaction {
   created_by?: string;
 }
 
+export interface Follow {
+  id: number;
+  follower_email: string;
+  following_email: string;
+}
+
 export interface TranslationData {
   nav: {
     home: string;
     mini: string;
     other: string;
     online: string;
+    free: string;
+    community: string;
     about: string;
     faq: string;
     contact: string;
@@ -143,12 +192,37 @@ export interface TranslationData {
     note: string;
     btnEnroll: string;
   };
+  free: {
+    title: string;
+    subtitle: string;
+    enrollBtn: string;
+    watchBtn: string;
+    loginToEnroll: string;
+  };
   about: {
     title: string;
     content: string[];
     mission: string;
     visionTitle: string;
     visionList: string[];
+  };
+  community: {
+    title: string;
+    subtitle: string;
+    follow: string;
+    unfollow: string;
+    members: string;
+  };
+  trainers: {
+    title: string;
+    subtitle: string;
+    addBtn: string;
+    formName: string;
+    formRole: string;
+    formImage: string;
+    formDesc: string;
+    delete: string;
+    managementTitle: string;
   };
   faq: {
     title: string;

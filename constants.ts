@@ -8,6 +8,8 @@ export const TRANSLATIONS: Record<'en' | 'kh', TranslationData> = {
       mini: "Mini Program",
       other: "Other Programs",
       online: "Online Courses",
+      free: "Free Courses",
+      community: "Community",
       about: "About",
       faq: "FAQ & Policy",
       contact: "Contact",
@@ -34,7 +36,7 @@ export const TRANSLATIONS: Record<'en' | 'kh', TranslationData> = {
         "High-quality trainers",
         "Real results & case studies",
         "Certificates recognized by businesses",
-        "Supportive Telegram community",
+        "Access a 30 minutes session with Mr.Zell",
         "Fun, modern environment"
       ],
       seeMore: "See more reasons"
@@ -82,7 +84,32 @@ export const TRANSLATIONS: Record<'en' | 'kh', TranslationData> = {
       bundleTitle: "Bundle Offer",
       bundleDesc: "Get all 3 courses for only $35",
       note: "Online courses are self-paced and designed for business owners, online sellers, marketers, and aspiring influencers.",
-      btnEnroll: "Contact to Enroll"
+      btnEnroll: "Buy The Course"
+    },
+    free: {
+      title: "Free Courses",
+      subtitle: "Start learning today with our collection of free, high-value training videos.",
+      enrollBtn: "Enroll for Free",
+      watchBtn: "Watch Now",
+      loginToEnroll: "Log in to enroll"
+    },
+    community: {
+      title: "Our Community",
+      subtitle: "Connect with other marketers, business owners, and creators in the KLTURE network.",
+      follow: "Follow",
+      unfollow: "Unfollow",
+      members: "Member Since"
+    },
+    trainers: {
+      title: "Our Trainers",
+      subtitle: "Meet the industry experts who will guide you through your marketing journey.",
+      addBtn: "Add Trainer",
+      formName: "Trainer Name",
+      formRole: "Role / Specialty",
+      formImage: "Image URL",
+      formDesc: "Detailed Description",
+      delete: "Delete",
+      managementTitle: "Trainer Management"
     },
     about: {
       title: "About KLTURE.ACADEMY",
@@ -95,11 +122,10 @@ export const TRANSLATIONS: Record<'en' | 'kh', TranslationData> = {
       visionTitle: "Future Vision (2025–2026)",
       visionList: [
         "Become Cambodia’s #1 accredited marketing training center",
-        "Obtain legal accreditation",
         "Partner with 10+ schools and universities",
         "Expand to Battambang, Siem Reap, Sihanoukville",
         "Recruit more trainers",
-        "Scale to $1,000,000+ annual revenue"
+        "Certified over a million marketers in Cambodia"
       ]
     },
     faq: {
@@ -138,6 +164,8 @@ export const TRANSLATIONS: Record<'en' | 'kh', TranslationData> = {
       mini: "កម្មវិធី MINI",
       other: "កម្មវិធីផ្សេងៗ",
       online: "វគ្គសិក្សាតាមអនឡាញ",
+      free: "វគ្គសិក្សាហ្វ្រី",
+      community: "សហគមន៍",
       about: "អំពីយើង",
       faq: "សំណួរ & គោលការណ៍",
       contact: "ទំនាក់ទំនង",
@@ -164,7 +192,7 @@ export const TRANSLATIONS: Record<'en' | 'kh', TranslationData> = {
         "គ្រូបង្វឹកដែលមានគុណភាពខ្ពស់",
         "លទ្ធផលជាក់ស្តែង & ករណីសិក្សា",
         "វិញ្ញាបនបត្រដែលទទួលស្គាល់ដោយអាជីវកម្ម",
-        "សហគមន៍ Telegram ដែលជួយគ្នាទៅវិញទៅមក",
+        "ទទួលបានការប្រឹក្សា ៣០ នាទីជាមួយ Mr.Zell",
         "បរិយាកាសរីករាយ និងទំនើប"
       ],
       seeMore: "មើលហេតុផលបន្ថែម"
@@ -212,7 +240,32 @@ export const TRANSLATIONS: Record<'en' | 'kh', TranslationData> = {
       bundleTitle: "ការផ្តល់ជូនពិសេស (Bundle)",
       bundleDesc: "ទទួលបានទាំង ៣ វគ្គក្នុងតម្លៃត្រឹមតែ $៣៥",
       note: "វគ្គសិក្សាអនឡាញគឺរៀនដោយខ្លួនឯង រចនាឡើងសម្រាប់ម្ចាស់អាជីវកម្ម អ្នកលក់អនឡាញ និងអ្នកទីផ្សារ។",
-      btnEnroll: "ទាក់ទងដើម្បីចុះឈ្មោះ"
+      btnEnroll: "ទិញវគ្គសិក្សា"
+    },
+    free: {
+      title: "វគ្គសិក្សាហ្វ្រី",
+      subtitle: "ចាប់ផ្តើមរៀនថ្ងៃនេះជាមួយវីដេអូហ្វឹកហ្វឺនដែលមានតម្លៃខ្ពស់របស់យើងដោយឥតគិតថ្លៃ។",
+      enrollBtn: "ចុះឈ្មោះចូលរៀនហ្វ្រី",
+      watchBtn: "មើលវីដេអូ",
+      loginToEnroll: "ចូលប្រើប្រាស់ដើម្បីរៀន"
+    },
+    community: {
+      title: "សហគមន៍របស់យើង",
+      subtitle: "ភ្ជាប់ទំនាក់ទំនងជាមួយអ្នកទីផ្សារ ម្ចាស់អាជីវកម្ម និងអ្នកបង្កើតមាតិកាផ្សេងទៀតនៅក្នុងបណ្តាញ KLTURE ។",
+      follow: "តាមដាន",
+      unfollow: "ឈប់តាមដាន",
+      members: "សមាជិកតាំងពី"
+    },
+    trainers: {
+      title: "គ្រូបង្វឹករបស់យើង",
+      subtitle: "ជួបជាមួយអ្នកជំនាញក្នុងវិស័យដែលនឹងណែនាំអ្នកក្នុងដំណើរទីផ្សាររបស់អ្នក។",
+      addBtn: "បន្ថែមគ្រូបង្វឹក",
+      formName: "ឈ្មោះគ្រូបង្វឹក",
+      formRole: "តួនាទី / ជំនាញ",
+      formImage: "តំណភ្ជាប់រូបភាព",
+      formDesc: "ការពិពណ៌នាលម្អិត",
+      delete: "លុប",
+      managementTitle: "ការគ្រប់គ្រងគ្រូបង្វឹក"
     },
     about: {
       title: "អំពី KLTURE.ACADEMY",
@@ -229,7 +282,7 @@ export const TRANSLATIONS: Record<'en' | 'kh', TranslationData> = {
         "សហការជាមួយសាលារៀន និងសាកលវិទ្យាល័យជាង ១០",
         "ពង្រីកទៅបាត់ដំបង សៀមរាប ក្រុងព្រះសីហនុ",
         "ជ្រើសរើសគ្រូបង្វឹកបន្ថែម",
-        "រកចំណូលបាន $១,០០០,០០០+ ក្នុងមួយឆ្នាំ"
+        "ផ្តល់វិញ្ញាបនបត្រជូនអ្នកទីផ្សារជាង ១ លាននាក់នៅកម្ពុជា"
       ]
     },
     faq: {

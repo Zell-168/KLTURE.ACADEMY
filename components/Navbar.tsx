@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLang, useAuth } from '../App';
@@ -27,6 +28,8 @@ const Navbar: React.FC = () => {
     { name: t.nav.mini, path: '/mini' },
     { name: t.nav.other, path: '/other' },
     { name: t.nav.online, path: '/online' },
+    { name: t.nav.free, path: '/free' },
+    { name: t.nav.community, path: '/community' },
   ];
 
   return (
