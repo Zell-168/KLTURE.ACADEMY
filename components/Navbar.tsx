@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLang, useAuth } from '../App';
@@ -24,7 +23,6 @@ const Navbar: React.FC = () => {
   };
 
   const navLinks = [
-    { name: t.nav.home, path: '/' },
     { name: t.nav.mini, path: '/mini' },
     { name: t.nav.other, path: '/other' },
     { name: t.nav.online, path: '/online' },
