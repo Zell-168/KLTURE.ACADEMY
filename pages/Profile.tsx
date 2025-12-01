@@ -1,8 +1,9 @@
+
 import React, { useEffect, useState } from 'react';
 import { useLang, useAuth } from '../App';
 import Section from '../components/ui/Section';
 import { useNavigate } from 'react-router-dom';
-import { Phone, Mail, LogOut, CheckCircle, Calendar, Loader2, BookOpen, Video, Star, Zap, Search, Wallet, TrendingUp, Plus, PlayCircle } from 'lucide-react';
+import { Phone, Mail, LogOut, CheckCircle, Calendar, Loader2, BookOpen, Video, Star, Zap, Search, Wallet, TrendingUp, Plus, PlayCircle, Send } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { CreditTransaction } from '../types';
 import { useCreditBalance } from '../lib/hooks';
@@ -231,14 +232,33 @@ const Profile: React.FC = () => {
                         </div>
                         <p className="text-4xl font-black mb-6">${creditBalance.toFixed(2)}</p>
                         
-                        <a 
-                            href="https://t.me/Who_1s_meng" 
-                            target="_blank" 
-                            rel="noreferrer"
-                            className="flex items-center justify-center gap-2 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors"
-                        >
-                            <Plus size={18} /> Top Up Credits
-                        </a>
+                        <p className="text-xs text-zinc-400 font-bold mb-2 uppercase">Top Up With</p>
+                        <div className="space-y-2">
+                             <a 
+                                href="https://t.me/Who_1s_meng" 
+                                target="_blank" 
+                                rel="noreferrer"
+                                className="flex items-center justify-center gap-2 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg transition-colors text-sm"
+                            >
+                                <Send size={14} /> Meng
+                            </a>
+                            <a 
+                                href="https://t.me/Kimly_yy" 
+                                target="_blank" 
+                                rel="noreferrer"
+                                className="flex items-center justify-center gap-2 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg transition-colors text-sm"
+                            >
+                                <Send size={14} /> Kimly
+                            </a>
+                            <a 
+                                href="https://t.me/chan_sopheng" 
+                                target="_blank" 
+                                rel="noreferrer"
+                                className="flex items-center justify-center gap-2 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg transition-colors text-sm"
+                            >
+                                <Send size={14} /> Sopheng
+                            </a>
+                        </div>
                     </div>
                     {/* Deco */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-zinc-800 rounded-full blur-3xl translate-x-10 -translate-y-10"></div>

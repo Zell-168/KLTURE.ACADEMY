@@ -3,13 +3,16 @@ import React, { useEffect, useState } from 'react';
 import { useLang, useAuth } from '../App';
 import Section from '../components/ui/Section';
 import { Link } from 'react-router-dom';
-import { CheckCircle2, ArrowRight, Wallet, TrendingUp } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Wallet, TrendingUp, Send } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import BannerCarousel from '../components/ui/BannerCarousel';
+import { DbHomepageSlider } from '../types';
 
 const Home: React.FC = () => {
   const { t } = useLang();
   const { user } = useAuth();
   const [creditBalance, setCreditBalance] = useState<number>(0);
+  const [sliderImages, setSliderImages] = useState<DbHomepageSlider[]>([]);
 
   // Fetch Credits for CTA
   useEffect(() => {
@@ -27,6 +30,24 @@ const Home: React.FC = () => {
     }
   }, [user]);
 
+  // Fetch Slider Images
+  useEffect(() => {
+    const fetchSlider = async () => {
+        try {
+            const { data } = await supabase
+                .from('homepage_slider')
+                .select('*')
+                .eq('is_active', true)
+                .order('display_order', { ascending: true });
+            
+            if (data) setSliderImages(data);
+        } catch (error) {
+            console.error('Error fetching slider:', error);
+        }
+    };
+    fetchSlider();
+  }, []);
+
   return (
     <div>
       {/* Hero */}
@@ -35,6 +56,18 @@ const Home: React.FC = () => {
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-zinc-900 mb-6 leading-tight">
             {t.home.heroTitle}
           </h1>
+
+          {/* Past Training Sessions Slider */}
+          {sliderImages.length > 0 && (
+            <div className="my-8 md:my-10 max-w-5xl mx-auto">
+                <BannerCarousel 
+                    items={sliderImages} 
+                    aspectRatio="pb-[56.25%] md:pb-[40%]" // 16:9 Mobile, 2.5:1 Desktop
+                    autoPlayInterval={4000}
+                />
+            </div>
+          )}
+
           <p className="text-lg md:text-xl text-zinc-600 max-w-3xl mx-auto mb-10 leading-relaxed">
             {t.home.heroSubtitle}
           </p>
@@ -73,15 +106,34 @@ const Home: React.FC = () => {
                       <h2 className="text-3xl md:text-5xl font-black mb-2">Your Balance: ${creditBalance}</h2>
                       <p className="text-zinc-400 max-w-lg">Top up your credits securely to easily enroll in any course or program instantly.</p>
                   </div>
-                  <div>
-                      <a 
-                          href="https://t.me/Who_1s_meng" 
-                          target="_blank" 
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-2 bg-yellow-400 text-black px-8 py-4 rounded-xl font-bold text-lg hover:bg-yellow-300 transition-colors"
-                      >
-                          Credit Top Up <ArrowRight size={20} />
-                      </a>
+                  <div className="flex flex-col gap-2">
+                       <p className="text-yellow-400 font-bold uppercase text-xs tracking-wider mb-1 text-center md:text-left">Contact for Top Up</p>
+                       <div className="flex flex-wrap gap-2 justify-center md:justify-end">
+                            <a 
+                                href="https://t.me/Who_1s_meng" 
+                                target="_blank" 
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-2 bg-yellow-400 text-black px-4 py-3 rounded-xl font-bold hover:bg-yellow-300 transition-colors"
+                            >
+                                <Send size={18} /> Meng
+                            </a>
+                            <a 
+                                href="https://t.me/Kimly_yy" 
+                                target="_blank" 
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-2 bg-yellow-400 text-black px-4 py-3 rounded-xl font-bold hover:bg-yellow-300 transition-colors"
+                            >
+                                <Send size={18} /> Kimly
+                            </a>
+                            <a 
+                                href="https://t.me/chan_sopheng" 
+                                target="_blank" 
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-2 bg-yellow-400 text-black px-4 py-3 rounded-xl font-bold hover:bg-yellow-300 transition-colors"
+                            >
+                                <Send size={18} /> Sopheng
+                            </a>
+                       </div>
                   </div>
               </div>
               

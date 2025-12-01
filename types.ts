@@ -79,6 +79,15 @@ export interface DbMiniProgram {
   }[];
 }
 
+export interface DbHomepageSlider {
+  id: number;
+  title?: string;
+  image_url: string;
+  display_order: number;
+  is_active: boolean;
+  created_at: string;
+}
+
 export interface SalesRecord {
   id: number;
   created_at: string;

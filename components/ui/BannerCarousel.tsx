@@ -11,9 +11,14 @@ interface CarouselItem {
 interface BannerCarouselProps {
   items: CarouselItem[];
   autoPlayInterval?: number;
+  aspectRatio?: string; // Tailwind class for aspect ratio (e.g., pb-[25%])
 }
 
-const BannerCarousel: React.FC<BannerCarouselProps> = ({ items, autoPlayInterval = 5000 }) => {
+const BannerCarousel: React.FC<BannerCarouselProps> = ({ 
+  items, 
+  autoPlayInterval = 5000,
+  aspectRatio = "pb-[25%] md:pb-[25%]" // Default to 4:1 banner
+}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Filter out items without valid URLs just in case
@@ -41,11 +46,8 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ items, autoPlayInterval
 
   return (
     <div className="relative w-full max-w-7xl mx-auto mb-12 rounded-2xl overflow-hidden shadow-2xl bg-zinc-900 group">
-      {/* Aspect Ratio Container 4:1 (1200x300) */}
-      <div className="relative pb-[25%] md:pb-[25%] h-0"> 
-        {/* For mobile we might want taller, but requirement says 4:1. 
-            On very small screens 4:1 is tiny. We might set min-height. */}
-        
+      {/* Dynamic Aspect Ratio Container */}
+      <div className={`relative ${aspectRatio} h-0`}> 
         {validItems.map((item, index) => (
           <div
             key={item.id}

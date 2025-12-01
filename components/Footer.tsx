@@ -31,27 +31,69 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Contact */}
-          <div className="flex flex-col gap-3 md:items-end">
-             <a 
-              href="https://t.me/Who_1s_meng" 
-              target="_blank" 
-              rel="noreferrer"
-              className="flex items-center gap-3 text-zinc-300 hover:text-white transition-colors"
-            >
-              <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
-                <Send size={16} />
-              </div>
-              <span className="text-sm">Telegram: @Who_1s_meng</span>
-            </a>
-            <a 
-              href="tel:+855889902595" 
-              className="flex items-center gap-3 text-zinc-300 hover:text-white transition-colors"
-            >
-              <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
-                <Phone size={16} />
-              </div>
-              <span className="text-sm">+855 88 990 2595</span>
-            </a>
+          <div className="flex flex-col gap-6 md:items-end">
+             {/* Meng */}
+             <div className="flex flex-col gap-1 md:items-end">
+                <span className="text-zinc-500 text-xs font-bold uppercase tracking-wider">Support (Meng)</span>
+                <div className="flex flex-col md:items-end gap-1">
+                  <a 
+                    href="https://t.me/Who_1s_meng" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors text-sm"
+                  >
+                    <Send size={14} className="text-blue-400" /> Telegram: @Who_1s_meng
+                  </a>
+                  <a 
+                    href="tel:+855889902595" 
+                    className="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors text-sm"
+                  >
+                    <Phone size={14} className="text-green-400" /> +855 88 990 2595
+                  </a>
+                </div>
+             </div>
+
+             {/* Kimly */}
+             <div className="flex flex-col gap-1 md:items-end">
+                <span className="text-zinc-500 text-xs font-bold uppercase tracking-wider">Support (Kimly)</span>
+                <div className="flex flex-col md:items-end gap-1">
+                  <a 
+                    href="https://t.me/Kimly_yy" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors text-sm"
+                  >
+                    <Send size={14} className="text-blue-400" /> Telegram: @Kimly_yy
+                  </a>
+                  <a 
+                    href="tel:+85516859826" 
+                    className="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors text-sm"
+                  >
+                    <Phone size={14} className="text-green-400" /> +855 16 859 826
+                  </a>
+                </div>
+             </div>
+
+             {/* Sopheng */}
+             <div className="flex flex-col gap-1 md:items-end">
+                <span className="text-zinc-500 text-xs font-bold uppercase tracking-wider">Support (Sopheng)</span>
+                <div className="flex flex-col md:items-end gap-1">
+                  <a 
+                    href="https://t.me/chan_sopheng" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors text-sm"
+                  >
+                    <Send size={14} className="text-blue-400" /> Telegram: @chan_sopheng
+                  </a>
+                  <a 
+                    href="tel:+85570397080" 
+                    className="flex items-center gap-2 text-zinc-300 hover:text-white transition-colors text-sm"
+                  >
+                    <Phone size={14} className="text-green-400" /> +855 70 397 080
+                  </a>
+                </div>
+             </div>
           </div>
         </div>
         

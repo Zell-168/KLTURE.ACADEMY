@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLang } from '../App';
 import Section from '../components/ui/Section';
@@ -315,15 +316,18 @@ const Contact: React.FC = () => {
                                     <XCircle size={18} />
                                     <span>Insufficient Funds</span>
                                 </div>
-                                <p className="text-sm mb-3">You need ${missingAmount.toFixed(2)} more to register.</p>
-                                <a 
-                                    href="https://t.me/Who_1s_meng" 
-                                    target="_blank" 
-                                    rel="noreferrer" 
-                                    className="inline-flex items-center gap-1 text-sm bg-red-600 text-white px-3 py-1.5 rounded-md hover:bg-red-700 transition-colors"
-                                >
-                                    Contact Sales to Top Up <ArrowRight size={14} />
-                                </a>
+                                <p className="text-sm mb-3">You need ${missingAmount.toFixed(2)} more to register. Contact Sales to Top Up:</p>
+                                <div className="flex flex-col gap-2">
+                                  <a href="https://t.me/Who_1s_meng" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm bg-white border border-red-200 text-red-700 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors font-medium">
+                                      <Send size={14} /> Contact Meng
+                                  </a>
+                                  <a href="https://t.me/Kimly_yy" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm bg-white border border-red-200 text-red-700 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors font-medium">
+                                      <Send size={14} /> Contact Kimly
+                                  </a>
+                                  <a href="https://t.me/chan_sopheng" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm bg-white border border-red-200 text-red-700 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors font-medium">
+                                      <Send size={14} /> Contact Sopheng
+                                  </a>
+                                </div>
                              </div>
                         )}
                     </div>
@@ -333,13 +337,34 @@ const Contact: React.FC = () => {
             {/* Contact Info */}
             <div className="space-y-4">
                 <p className="font-bold text-zinc-900 mb-2">Need help?</p>
+                {/* Meng */}
                 <a href="https://t.me/Who_1s_meng" target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 border border-zinc-200 rounded-xl hover:border-blue-400 transition-colors group bg-white">
                     <div className="w-10 h-10 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-colors">
                         <Send size={20} />
                     </div>
                     <div>
-                        <p className="font-bold">Telegram Support</p>
-                        <p className="text-zinc-500 text-sm">@Who_1s_meng</p>
+                        <p className="font-bold">Contact Meng</p>
+                        <p className="text-zinc-500 text-sm">@Who_1s_meng | 088 990 2595</p>
+                    </div>
+                </a>
+                {/* Kimly */}
+                <a href="https://t.me/Kimly_yy" target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 border border-zinc-200 rounded-xl hover:border-blue-400 transition-colors group bg-white">
+                    <div className="w-10 h-10 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                        <Send size={20} />
+                    </div>
+                    <div>
+                        <p className="font-bold">Contact Kimly</p>
+                        <p className="text-zinc-500 text-sm">@Kimly_yy | 016 859 826</p>
+                    </div>
+                </a>
+                {/* Sopheng */}
+                <a href="https://t.me/chan_sopheng" target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 border border-zinc-200 rounded-xl hover:border-blue-400 transition-colors group bg-white">
+                    <div className="w-10 h-10 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                        <Send size={20} />
+                    </div>
+                    <div>
+                        <p className="font-bold">Contact Sopheng</p>
+                        <p className="text-zinc-500 text-sm">@chan_sopheng | 070 397 080</p>
                     </div>
                 </a>
             </div>
