@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLang, useAuth } from '../App';
-import { Menu, X, Globe, User, LogOut, LogIn, Wallet } from 'lucide-react';
+import { Menu, X, Globe, User, LogOut, LogIn, Wallet, Sparkles } from 'lucide-react';
 import { useCreditBalance } from '../lib/hooks';
 
 const Navbar: React.FC = () => {
@@ -52,6 +53,15 @@ const Navbar: React.FC = () => {
                 {link.name}
               </Link>
             ))}
+
+            {/* KLTURE.AI Special Link */}
+            <Link
+                to="/klture-ai"
+                className="flex items-center gap-1.5 text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-purple-600 hover:opacity-80 transition-opacity"
+            >
+                <Sparkles size={14} className="text-red-500" />
+                {t.nav.ai}
+            </Link>
             
             <button 
               onClick={toggleLang}
@@ -131,6 +141,14 @@ const Navbar: React.FC = () => {
               {link.name}
             </button>
           ))}
+
+          <button
+              onClick={() => handleNav('/klture-ai')}
+              className="text-left text-xl font-bold flex items-center gap-2 text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-purple-600"
+            >
+              <Sparkles size={20} className="text-red-500" />
+              {t.nav.ai}
+            </button>
           
           <div className="flex flex-col gap-4 mt-2">
              <button

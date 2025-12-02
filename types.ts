@@ -88,6 +88,15 @@ export interface DbHomepageSlider {
   created_at: string;
 }
 
+export interface AiHistoryItem {
+  id: number;
+  user_email: string;
+  tool_type: 'caption' | 'tiktok' | 'prompt';
+  input_context: any;
+  output_content: string;
+  created_at: string;
+}
+
 export interface SalesRecord {
   id: number;
   created_at: string;
@@ -147,6 +156,7 @@ export interface TranslationData {
     online: string;
     free: string;
     community: string;
+    ai: string;
     about: string;
     faq: string;
     contact: string;
@@ -207,6 +217,19 @@ export interface TranslationData {
     enrollBtn: string;
     watchBtn: string;
     loginToEnroll: string;
+  };
+  ai: {
+    title: string;
+    subtitle: string;
+    loginRequired: string;
+    tools: {
+      caption: string;
+      captionDesc: string;
+      tiktok: string;
+      tiktokDesc: string;
+      prompt: string;
+      promptDesc: string;
+    }
   };
   about: {
     title: string;

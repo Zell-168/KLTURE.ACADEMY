@@ -18,6 +18,10 @@ import SignIn from './pages/SignIn';
 import Profile from './pages/Profile';
 import Trainers from './pages/Trainers';
 import LearningClassroom from './pages/LearningClassroom';
+import KltureAI from './pages/KltureAI';
+import CaptionGenerator from './pages/ai/CaptionGenerator';
+import TikTokGenerator from './pages/ai/TikTokGenerator';
+import PromptGenerator from './pages/ai/PromptGenerator';
 import { User as UserIcon } from 'lucide-react';
 
 // Language Context
@@ -113,6 +117,12 @@ const App: React.FC = () => {
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/learning/:courseId" element={<LearningClassroom />} />
+                
+                {/* AI Tools */}
+                <Route path="/klture-ai" element={<KltureAI />} />
+                <Route path="/klture-ai/caption" element={<CaptionGenerator />} />
+                <Route path="/klture-ai/tiktok" element={<TikTokGenerator />} />
+                <Route path="/klture-ai/prompt" element={<PromptGenerator />} />
               </Routes>
             </main>
             <Footer />

@@ -10,6 +10,7 @@ export const TRANSLATIONS: Record<'en' | 'kh', TranslationData> = {
       online: "Online Courses",
       free: "Free Courses",
       community: "Community",
+      ai: "KLTURE.AI",
       about: "About",
       faq: "FAQ & Policy",
       contact: "Contact",
@@ -93,6 +94,19 @@ export const TRANSLATIONS: Record<'en' | 'kh', TranslationData> = {
       watchBtn: "Watch Now",
       loginToEnroll: "Log in to enroll"
     },
+    ai: {
+      title: "KLTURE.AI Tools",
+      subtitle: "Powerful AI tools designed by Zell to help you create content, captions, and prompts faster.",
+      loginRequired: "You must be logged in to use KLTURE.AI tools.",
+      tools: {
+        caption: "Caption AI Generator",
+        captionDesc: "Generate killer Khmer captions that sell like crazy.",
+        tiktok: "TikTok Idea Generator",
+        tiktokDesc: "Get viral content ideas tailored to your niche.",
+        prompt: "AI Prompt Master",
+        promptDesc: "Create effective prompts for ChatGPT, Gemini, and Deepseek."
+      }
+    },
     community: {
       title: "Our Community",
       subtitle: "Connect with other marketers, business owners, and creators in the KLTURE network.",
@@ -166,6 +180,7 @@ export const TRANSLATIONS: Record<'en' | 'kh', TranslationData> = {
       online: "វគ្គសិក្សាតាមអនឡាញ",
       free: "វគ្គសិក្សាហ្វ្រី",
       community: "សហគមន៍",
+      ai: "KLTURE.AI",
       about: "អំពីយើង",
       faq: "សំណួរ & គោលការណ៍",
       contact: "ទំនាក់ទំនង",
@@ -202,7 +217,7 @@ export const TRANSLATIONS: Record<'en' | 'kh', TranslationData> = {
       intro: "កម្មវិធីដែលពេញនិយមបំផុតរបស់យើង។ រចនាឡើងដើម្បីទទួលបានលទ្ធផលជាក់ស្តែងក្នុងរយៈពេលមួយថ្ងៃ ឬពីរយប់។",
       weekendTitle: "MINI — ថ្នាក់ពេញមួយថ្ងៃ (ចុងសប្តាហ៍)",
       weekendSub: "ផលិតផលចម្បងទី ១",
-      nightTitle: "MINI — ថ្នាក់ពេលយប់",
+      nightTitle: "MINI — ថ្នាក់ពេញយប់",
       nightSub: "ផលិតផលចម្បងទី ២",
       learnTitle: "អ្វីដែលអ្នកនឹងរៀន",
       learnList: [
@@ -248,6 +263,19 @@ export const TRANSLATIONS: Record<'en' | 'kh', TranslationData> = {
       enrollBtn: "ចុះឈ្មោះចូលរៀនហ្វ្រី",
       watchBtn: "មើលវីដេអូ",
       loginToEnroll: "ចូលប្រើប្រាស់ដើម្បីរៀន"
+    },
+    ai: {
+      title: "ឧបករណ៍ KLTURE.AI",
+      subtitle: "ឧបករណ៍ AI ដ៏មានឥទ្ធិពលដែលបង្កើតឡើងដោយ Zell ដើម្បីជួយអ្នកបង្កើតមាតិកា និង Caption បានលឿនជាងមុន។",
+      loginRequired: "អ្នកត្រូវចូលប្រើប្រាស់គណនីដើម្បីប្រើឧបករណ៍ KLTURE.AI ។",
+      tools: {
+        caption: "Caption AI Generator",
+        captionDesc: "បង្កើត Caption ជាភាសាខ្មែរដែលទាក់ទាញ និងលក់ដាច់។",
+        tiktok: "TikTok Idea Generator",
+        tiktokDesc: "ទទួលបានគំនិតវីដេអូ Viral ដែលសាកសមនឹងអាជីវកម្មរបស់អ្នក។",
+        prompt: "AI Prompt Master",
+        promptDesc: "បង្កើត Prompt ដែលមានប្រសិទ្ធភាពសម្រាប់ ChatGPT, Gemini និង Deepseek ។"
+      }
     },
     community: {
       title: "សហគមន៍របស់យើង",
