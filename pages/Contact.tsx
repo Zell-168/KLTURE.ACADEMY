@@ -50,7 +50,7 @@ const Contact: React.FC = () => {
             const [mini, other, online] = await Promise.all([
                 supabase.from('programs_mini').select('title, available_dates, price'),
                 supabase.from('programs_other').select('title, available_dates, price'),
-                supabase.from('courses_online').select('title, price')
+                supabase.from('online_courses_management').select('title, price')
             ]);
 
             const options: string[] = [];

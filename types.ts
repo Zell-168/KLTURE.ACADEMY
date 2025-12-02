@@ -37,6 +37,16 @@ export interface DbOnlineCourse {
   }[];
 }
 
+export interface DbCourseVideo {
+  id: number;
+  course_id: number;
+  title: string;
+  description: string;
+  video_url: string;
+  image_url?: string;
+  display_order: number;
+}
+
 export interface DbFreeCourse {
   id: number;
   title: string;

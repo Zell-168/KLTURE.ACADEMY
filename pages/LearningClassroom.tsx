@@ -1,15 +1,16 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../App';
 import Section from '../components/ui/Section';
 import VideoPlayer from '../components/ui/VideoPlayer';
 import { supabase } from '../lib/supabase';
-import { Loader2, ArrowLeft, AlertCircle, BookOpen, CheckCircle } from 'lucide-react';
+import { Loader2, ArrowLeft, AlertCircle, BookOpen, CheckCircle, Play, ListVideo } from 'lucide-react';
+import { DbCourseVideo } from '../types';
 
-interface ClassroomData {
+interface CourseData {
   title: string;
   description: string;
-  video_url: string;
   type_label: string;
 }
 
@@ -18,7 +19,9 @@ const LearningClassroom: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  const [data, setData] = useState<ClassroomData | null>(null);
+  const [course, setCourse] = useState<CourseData | null>(null);
+  const [videos, setVideos] = useState<DbCourseVideo[]>([]);
+  const [currentVideo, setCurrentVideo] = useState<DbCourseVideo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,34 +49,35 @@ const LearningClassroom: React.FC = () => {
             throw new Error("Invalid course link.");
         }
 
-        let tableName = '';
+        let mainTable = '';
         let typeLabel = '';
 
-        // Determine which table to query based on ID prefix
+        // Determine main table
         switch (type) {
             case 'mini':
-                tableName = 'programs_mini';
+                mainTable = 'programs_mini';
                 typeLabel = 'Mini Program';
                 break;
             case 'other':
-                tableName = 'programs_other';
+                mainTable = 'programs_other';
                 typeLabel = 'Advanced Program';
                 break;
             case 'online':
-                tableName = 'courses_online';
+                mainTable = 'online_courses_management';
                 typeLabel = 'Online Course';
                 break;
             case 'free':
-                tableName = 'courses_free';
+                mainTable = 'courses_free';
                 typeLabel = 'Free Course';
                 break;
             default:
                 throw new Error("Unknown course type.");
         }
 
+        // 1. Fetch Course Metadata
         const { data: courseData, error: dbError } = await supabase
-            .from(tableName)
-            .select('title, description, video_url')
+            .from(mainTable)
+            .select('title, description, video_url') // Select video_url as fallback
             .eq('id', id)
             .single();
 
@@ -81,16 +85,48 @@ const LearningClassroom: React.FC = () => {
             throw new Error("Could not find course details.");
         }
 
-        if (!courseData.video_url) {
-            throw new Error("This course does not have video content uploaded yet.");
-        }
-
-        setData({
+        setCourse({
             title: courseData.title,
-            description: courseData.description,
-            video_url: courseData.video_url,
+            description: courseData.description || 'No description provided.',
             type_label: typeLabel
         });
+
+        // 2. Fetch Videos (Curriculum)
+        // If type is 'online', we check the new child table `online_course_videos`
+        let fetchedVideos: DbCourseVideo[] = [];
+
+        if (type === 'online') {
+            const { data: videoData, error: videoError } = await supabase
+                .from('online_course_videos')
+                .select('*')
+                .eq('course_id', id)
+                .order('display_order', { ascending: true });
+            
+            if (!videoError && videoData && videoData.length > 0) {
+                fetchedVideos = videoData;
+            }
+        }
+
+        // Fallback: If no videos found in child table (or it's not an online course),
+        // use the main table's `video_url` as a single lesson.
+        if (fetchedVideos.length === 0 && courseData.video_url) {
+            fetchedVideos.push({
+                id: 0,
+                course_id: id,
+                title: 'Main Class Video',
+                description: 'Full course recording',
+                video_url: courseData.video_url,
+                image_url: '',
+                display_order: 1
+            });
+        }
+
+        if (fetchedVideos.length === 0) {
+            throw new Error("No video content uploaded for this course yet.");
+        }
+
+        setVideos(fetchedVideos);
+        setCurrentVideo(fetchedVideos[0]); // Default to first video
 
       } catch (err: any) {
         console.error("Error loading classroom:", err);
@@ -114,7 +150,7 @@ const LearningClassroom: React.FC = () => {
     );
   }
 
-  if (error || !data) {
+  if (error || !course || !currentVideo) {
     return (
       <Section className="min-h-screen flex items-center justify-center">
         <div className="max-w-md mx-auto text-center">
@@ -147,8 +183,8 @@ const LearningClassroom: React.FC = () => {
                   <ArrowLeft size={24} />
                </button>
                <div>
-                   <h1 className="font-bold text-lg leading-none text-zinc-900">{data.title}</h1>
-                   <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">{data.type_label}</span>
+                   <h1 className="font-bold text-lg leading-none text-zinc-900 line-clamp-1">{course.title}</h1>
+                   <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">{course.type_label}</span>
                </div>
            </div>
            
@@ -161,28 +197,61 @@ const LearningClassroom: React.FC = () => {
        <div className="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
             <div className="grid lg:grid-cols-3 gap-8">
                 
-                {/* Video Column */}
+                {/* Video Column (Main) */}
                 <div className="lg:col-span-2">
-                    <VideoPlayer url={data.video_url} className="shadow-2xl" />
+                    <div className="mb-6">
+                         <VideoPlayer url={currentVideo.video_url} className="shadow-2xl rounded-2xl" />
+                    </div>
+                    
+                    <div className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm">
+                        <h2 className="text-2xl font-bold mb-2">{currentVideo.title}</h2>
+                        <p className="text-zinc-600 whitespace-pre-wrap">{currentVideo.description || course.description}</p>
+                    </div>
                 </div>
 
-                {/* Info Column */}
+                {/* Playlist / Info Column */}
                 <div className="lg:col-span-1">
-                    <div className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm h-full">
-                        <div className="flex items-center gap-3 mb-6">
-                             <div className="w-10 h-10 bg-red-50 text-red-600 rounded-lg flex items-center justify-center">
-                                 <BookOpen size={20} />
+                    <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm h-full flex flex-col overflow-hidden">
+                        <div className="p-5 border-b border-zinc-100 bg-zinc-50">
+                             <div className="flex items-center gap-2 text-zinc-900 font-bold">
+                                 <ListVideo size={20} />
+                                 <span>Course Curriculum</span>
+                                 <span className="ml-auto bg-black text-white text-xs px-2 py-0.5 rounded-full">{videos.length} videos</span>
                              </div>
-                             <h2 className="font-bold text-lg">Course Details</h2>
                         </div>
                         
-                        <div className="prose prose-sm prose-zinc text-zinc-600">
-                            <h3 className="text-black font-bold text-base mb-2">{data.title}</h3>
-                            <p className="whitespace-pre-wrap">{data.description || "No description provided."}</p>
+                        <div className="flex-grow overflow-y-auto max-h-[600px] p-2 space-y-1">
+                            {videos.map((vid, idx) => {
+                                const isActive = currentVideo.id === vid.id;
+                                return (
+                                    <button 
+                                        key={vid.id}
+                                        onClick={() => setCurrentVideo(vid)}
+                                        className={`w-full text-left p-3 rounded-xl transition-all flex gap-3 group ${
+                                            isActive ? 'bg-red-50 border border-red-100' : 'hover:bg-zinc-50 border border-transparent'
+                                        }`}
+                                    >
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-bold text-xs ${
+                                            isActive ? 'bg-red-600 text-white' : 'bg-zinc-200 text-zinc-500 group-hover:bg-zinc-300'
+                                        }`}>
+                                            {isActive ? <Play size={12} fill="currentColor" /> : idx + 1}
+                                        </div>
+                                        <div>
+                                            <p className={`text-sm font-bold line-clamp-1 ${isActive ? 'text-red-900' : 'text-zinc-800'}`}>
+                                                {vid.title}
+                                            </p>
+                                            <p className="text-xs text-zinc-500 line-clamp-1 mt-0.5">
+                                                {vid.description || "Video Lesson"}
+                                            </p>
+                                        </div>
+                                    </button>
+                                );
+                            })}
                         </div>
 
-                        <div className="mt-8 pt-8 border-t border-zinc-100">
-                            <p className="text-xs text-zinc-400 font-medium text-center">
+                        {/* Sticky Help Footer */}
+                        <div className="p-4 border-t border-zinc-100 bg-zinc-50 text-center">
+                            <p className="text-xs text-zinc-400 font-medium">
                                 Need help? Contact support via Telegram.
                             </p>
                         </div>

@@ -75,7 +75,7 @@ const Profile: React.FC = () => {
         const [miniRes, otherRes, onlineRes, freeRes] = await Promise.all([
             supabase.from('programs_mini').select('*'),
             supabase.from('programs_other').select('*'),
-            supabase.from('courses_online').select('*'),
+            supabase.from('online_courses_management').select('*'),
             supabase.from('courses_free').select('*')
         ]);
 
