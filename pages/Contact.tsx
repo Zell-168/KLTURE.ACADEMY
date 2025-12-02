@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useLang } from '../App';
 import Section from '../components/ui/Section';
 import { useLocation, Link } from 'react-router-dom';
-import { Send, Phone, CheckCircle, Loader2, AlertCircle, Wallet, ArrowRight, XCircle } from 'lucide-react';
+import { Send, CheckCircle, Loader2, AlertCircle, Wallet, XCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../App';
 import { useCreditBalance } from '../lib/hooks';
@@ -20,11 +20,8 @@ const Contact: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Dynamic Options
-  const [programOptions, setProgramOptions] = useState<string[]>([]);
-  const [scheduleMap, setScheduleMap] = useState<Record<string, string[]>>({});
   const [priceMap, setPriceMap] = useState<Record<string, number>>({});
   const [categoryMap, setCategoryMap] = useState<Record<string, string>>({}); // Maps Program Title -> Category (MINI, OTHER, ONLINE)
-  const [availableDates, setAvailableDates] = useState<string[]>([]);
   
   // Form State
   const [formData, setFormData] = useState({
@@ -43,18 +40,16 @@ const Contact: React.FC = () => {
   const hasSufficientCredits = user ? creditBalance >= currentPrice : false;
   const missingAmount = currentPrice - creditBalance;
 
-  // Fetch available programs and schedules
+  // Fetch available programs and prices
   useEffect(() => {
     const fetchPrograms = async () => {
         try {
             const [mini, other, online] = await Promise.all([
-                supabase.from('programs_mini').select('title, available_dates, price'),
-                supabase.from('programs_other').select('title, available_dates, price'),
+                supabase.from('programs_mini').select('title, price'),
+                supabase.from('programs_other').select('title, price'),
                 supabase.from('online_courses_management').select('title, price')
             ]);
 
-            const options: string[] = [];
-            const schedules: Record<string, string[]> = {};
             const prices: Record<string, number> = {};
             const categories: Record<string, string> = {};
 
@@ -66,54 +61,30 @@ const Contact: React.FC = () => {
             
             // Process MINI Programs
             mini.data?.forEach(p => {
-                options.push(p.title);
                 prices[p.title] = parsePrice(p.price);
                 categories[p.title] = 'MINI';
-                if (p.available_dates && p.available_dates.length > 0) {
-                    schedules[p.title] = p.available_dates;
-                }
             });
 
             // Process OTHER Programs
             other.data?.forEach(p => {
-                options.push(p.title);
                 prices[p.title] = parsePrice(p.price);
                 categories[p.title] = 'OTHER';
-                if (p.available_dates && p.available_dates.length > 0) {
-                    schedules[p.title] = p.available_dates;
-                }
             });
 
             // Process ONLINE Courses
             online.data?.forEach(p => {
                 const title = `Online: ${p.title}`;
-                options.push(title);
                 prices[title] = parsePrice(p.price);
                 categories[title] = 'ONLINE';
-                schedules[title] = ['Immediate Access / Self-Paced'];
             });
             
             // Bundle
             const bundleTitle = 'Online: All 3 Courses Bundle';
-            options.push(bundleTitle);
             prices[bundleTitle] = 35;
             categories[bundleTitle] = 'BUNDLE';
-            schedules[bundleTitle] = ['Immediate Access / Self-Paced'];
 
-            setProgramOptions(options);
-            setScheduleMap(schedules);
             setPriceMap(prices);
             setCategoryMap(categories);
-            
-            // Set default program if none selected
-            if (!formData.program && options.length > 0) {
-                 const defaultProgram = options[0];
-                 setFormData(prev => ({ 
-                     ...prev, 
-                     program: defaultProgram,
-                     date: schedules[defaultProgram]?.[0] || ''
-                 }));
-            }
 
         } catch (err) {
             console.error("Failed to load program options", err);
@@ -122,7 +93,7 @@ const Contact: React.FC = () => {
         }
     };
     fetchPrograms();
-  }, [formData.program]);
+  }, []);
 
   // Update selection from navigation state (e.g. clicking "Register" on a specific course)
   useEffect(() => {
@@ -130,27 +101,11 @@ const Contact: React.FC = () => {
         const prog = location.state.selectedProgram;
         setFormData(prev => ({ 
             ...prev, 
-            program: prog
+            program: prog,
+            date: 'Immediate / Online' // Default date for online purchases
         }));
     }
   }, [location]);
-
-  // Update available dates when program changes
-  useEffect(() => {
-    if (formData.program && scheduleMap[formData.program]) {
-        const dates = scheduleMap[formData.program];
-        setAvailableDates(dates);
-        // Default to first option
-        if (dates.length > 0) {
-            setFormData(prev => ({ ...prev, date: dates[0] }));
-        } else {
-            setFormData(prev => ({ ...prev, date: '' }));
-        }
-    } else {
-        setAvailableDates([]);
-        setFormData(prev => ({ ...prev, date: '' }));
-    }
-  }, [formData.program, scheduleMap]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -169,14 +124,14 @@ const Contact: React.FC = () => {
         email: formData.email.trim(),
         // Only send password if user is not logged in (new registration)
         ...( !user ? { password: formData.password.trim() } : {}),
-        program: formData.program,
-        preferred_date: formData.date.trim(),
+        program: formData.program || 'General Member', // Default to General Member if no program selected
+        preferred_date: formData.date.trim() || null,
         message: formData.message.trim()
     };
 
     try {
-      if (user) {
-        // Enforce Credit Payment
+      if (user && formData.program) {
+        // Enforce Credit Payment ONLY if a program is selected
         if (creditBalance < currentPrice) {
             throw new Error(`Insufficient credits. You need ${currentPrice} but have ${creditBalance}. Please top up.`);
         }
@@ -189,8 +144,8 @@ const Contact: React.FC = () => {
 
       if (regError) throw regError;
 
-      // 2. Handle Payment Logic (If logged in & Paid)
-      if (user && currentPrice > 0) {
+      // 2. Handle Payment Logic (If logged in & Paid & Program Selected)
+      if (user && formData.program && currentPrice > 0) {
         
         // A. Deduct Credits
         const { error: txError } = await supabase
@@ -300,36 +255,51 @@ const Contact: React.FC = () => {
                     </div>
 
                     <div className="border-t border-zinc-100 pt-6">
-                        <div className="flex justify-between items-center mb-2">
-                            <span className="text-zinc-600">Program Cost:</span>
-                            <span className="font-bold text-lg">${currentPrice.toFixed(2)}</span>
-                        </div>
-                        
-                        {hasSufficientCredits ? (
-                             <div className="bg-green-50 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2 mt-4 font-medium">
-                                <CheckCircle size={18} />
-                                <span>Balance sufficient for payment.</span>
-                             </div>
+                        {formData.program ? (
+                            <>
+                                <div className="mb-4 bg-zinc-50 p-3 rounded-lg border border-zinc-100">
+                                    <p className="text-xs text-zinc-400 font-bold uppercase mb-1">Buying:</p>
+                                    <p className="font-bold text-zinc-900">{formData.program}</p>
+                                </div>
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-zinc-600">Program Cost:</span>
+                                    <span className="font-bold text-lg">${currentPrice.toFixed(2)}</span>
+                                </div>
+                            </>
                         ) : (
-                             <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg mt-4">
-                                <div className="flex items-center gap-2 font-bold mb-1">
-                                    <XCircle size={18} />
-                                    <span>Insufficient Funds</span>
-                                </div>
-                                <p className="text-sm mb-3">You need ${missingAmount.toFixed(2)} more to register. Contact Sales to Top Up:</p>
-                                <div className="flex flex-col gap-2">
-                                  <a href="https://t.me/Who_1s_meng" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm bg-white border border-red-200 text-red-700 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors font-medium">
-                                      <Send size={14} /> Contact Meng
-                                  </a>
-                                  <a href="https://t.me/Kimly_yy" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm bg-white border border-red-200 text-red-700 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors font-medium">
-                                      <Send size={14} /> Contact Kimly
-                                  </a>
-                                  <a href="https://t.me/chan_sopheng" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm bg-white border border-red-200 text-red-700 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors font-medium">
-                                      <Send size={14} /> Contact Sopheng
-                                  </a>
-                                </div>
-                             </div>
+                            <div className="flex items-center gap-2 text-zinc-500 italic mb-2">
+                                <AlertCircle size={16} />
+                                <span>General Registration (No Cost)</span>
+                            </div>
                         )}
+                        
+                        {formData.program ? (
+                            hasSufficientCredits ? (
+                                <div className="bg-green-50 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2 mt-4 font-medium">
+                                    <CheckCircle size={18} />
+                                    <span>Balance sufficient for payment.</span>
+                                </div>
+                            ) : (
+                                <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg mt-4">
+                                    <div className="flex items-center gap-2 font-bold mb-1">
+                                        <XCircle size={18} />
+                                        <span>Insufficient Funds</span>
+                                    </div>
+                                    <p className="text-sm mb-3">You need ${missingAmount.toFixed(2)} more to register. Contact Sales to Top Up:</p>
+                                    <div className="flex flex-col gap-2">
+                                    <a href="https://t.me/Who_1s_meng" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm bg-white border border-red-200 text-red-700 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors font-medium">
+                                        <Send size={14} /> Contact Meng
+                                    </a>
+                                    <a href="https://t.me/Kimly_yy" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm bg-white border border-red-200 text-red-700 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors font-medium">
+                                        <Send size={14} /> Contact Kimly
+                                    </a>
+                                    <a href="https://t.me/chan_sopheng" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm bg-white border border-red-200 text-red-700 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors font-medium">
+                                        <Send size={14} /> Contact Sopheng
+                                    </a>
+                                    </div>
+                                </div>
+                            )
+                        ) : null}
                     </div>
                 </div>
             )}
@@ -382,30 +352,7 @@ const Contact: React.FC = () => {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Program Selection - Prominent */}
-                <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200">
-                    <label className="block text-sm font-bold text-zinc-700 mb-2">{t.contact.formProgram} *</label>
-                    <div className="relative">
-                        <select 
-                            name="program"
-                            value={formData.program}
-                            onChange={handleChange}
-                            disabled={fetchingPrograms}
-                            className="w-full px-4 py-3 rounded-lg bg-white border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all appearance-none font-medium"
-                        >
-                            {fetchingPrograms ? (
-                                <option>Loading available programs...</option>
-                            ) : (
-                                programOptions.map((opt, i) => (
-                                    <option key={i} value={opt}>{opt}</option>
-                                ))
-                            )}
-                        </select>
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
-                             {fetchingPrograms ? <Loader2 className="animate-spin" size={16}/> : '▼'}
-                        </div>
-                    </div>
-                </div>
+                {/* Removed Choose Program and Schedule fields as requested */}
 
                 {/* Personal Details */}
                 <div>
@@ -470,45 +417,15 @@ const Contact: React.FC = () => {
                     </div>
                 )}
 
-                <div>
-                    <label className="block text-sm font-bold text-zinc-700 mb-1">{t.contact.formDate}</label>
-                    {availableDates.length > 0 ? (
-                        <div className="relative">
-                            <select 
-                                name="date"
-                                value={formData.date}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 rounded-lg bg-zinc-50 border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white transition-all appearance-none"
-                            >
-                                {availableDates.map((d, i) => (
-                                    <option key={i} value={d}>{d}</option>
-                                ))}
-                            </select>
-                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
-                                ▼
-                            </div>
-                        </div>
-                    ) : (
-                         <input 
-                            type="text" 
-                            name="date"
-                            value={formData.date}
-                            onChange={handleChange}
-                            placeholder="Immediate Access"
-                            readOnly
-                            className="w-full px-4 py-3 rounded-lg bg-zinc-100 border border-zinc-200 text-zinc-500 cursor-not-allowed"
-                        />
-                    )}
-                </div>
-
                 {/* Submit Button Area */}
                 <div className="pt-4">
                     {user ? (
                         <button 
                             type="submit"
-                            disabled={loading || fetchingPrograms || !hasSufficientCredits}
+                            // If a program is selected, ensure we have sufficient credits. If no program (just updating/contacting), allow.
+                            disabled={loading || fetchingPrograms || (formData.program ? !hasSufficientCredits : false)}
                             className={`w-full py-4 rounded-xl font-bold text-lg transition-all shadow-lg flex items-center justify-center gap-2 
-                                ${!hasSufficientCredits 
+                                ${(formData.program && !hasSufficientCredits)
                                     ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed' 
                                     : 'bg-black text-white hover:bg-zinc-800'
                                 }`}
@@ -517,10 +434,10 @@ const Contact: React.FC = () => {
                                 <>
                                     <Loader2 className="animate-spin" size={20} /> Processing...
                                 </>
-                            ) : !hasSufficientCredits ? (
+                            ) : (formData.program && !hasSufficientCredits) ? (
                                 "Insufficient Credits"
                             ) : (
-                                `Pay ${currentPrice} Credits & Register`
+                                formData.program ? `Pay ${currentPrice} Credits & Enroll` : "Create Account"
                             )}
                         </button>
                     ) : (
@@ -529,7 +446,7 @@ const Contact: React.FC = () => {
                             disabled={loading || fetchingPrograms}
                             className="w-full py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-lg transition-all shadow-lg shadow-red-600/20"
                         >
-                            {loading ? "Processing..." : "Create Account & Register"}
+                            {loading ? "Processing..." : "Create Account"}
                         </button>
                     )}
                     
