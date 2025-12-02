@@ -37,39 +37,50 @@ const KltureAI: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
-      <Section className="text-center pt-16 pb-8">
-        <div className="inline-flex items-center justify-center p-3 bg-zinc-900 rounded-2xl mb-6 shadow-xl">
-           <Sparkles size={40} className="text-yellow-400" />
-        </div>
-        <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-purple-600 pb-2">
-          {t.ai.title}
-        </h1>
-        <p className="text-lg md:text-xl text-zinc-500 max-w-2xl mx-auto mb-8">
-          {t.ai.subtitle}
-        </p>
+    <div className="min-h-screen bg-zinc-50/50">
+      {/* Hero Section */}
+      <div className="relative bg-white border-b border-zinc-100 overflow-hidden">
+          <Section className="text-center pt-20 pb-16 relative z-10">
+            <div className="inline-flex items-center justify-center p-4 bg-zinc-900 rounded-3xl mb-8 shadow-2xl ring-4 ring-zinc-100">
+              <Sparkles size={48} className="text-yellow-400" />
+            </div>
+            
+            <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tighter text-zinc-900">
+               {t.ai.title}
+            </h1>
+            
+            <p className="text-lg md:text-xl text-zinc-500 max-w-2xl mx-auto font-medium leading-relaxed">
+              {t.ai.subtitle}
+            </p>
 
-        {!user && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 max-w-md mx-auto mb-12 flex items-center gap-3 text-yellow-800">
-            <Lock size={20} />
-            <span className="font-bold text-sm">{t.ai.loginRequired}</span>
-            <Link to="/signin" className="ml-auto underline font-bold">Sign In</Link>
+            {!user && (
+              <div className="mt-8 inline-flex items-center gap-2 bg-yellow-50 border border-yellow-200 rounded-full px-5 py-2 text-yellow-800 shadow-sm animate-pulse">
+                <Lock size={16} />
+                <span className="font-bold text-sm">{t.ai.loginRequired}</span>
+                <Link to="/signin" className="ml-2 underline font-bold hover:text-yellow-900">Sign In</Link>
+              </div>
+            )}
+          </Section>
+          
+          {/* Decorative Background Elements */}
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+              <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-red-100 rounded-full blur-3xl opacity-50"></div>
+              <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-purple-100 rounded-full blur-3xl opacity-50"></div>
           </div>
-        )}
-      </Section>
+      </div>
 
-      <Section className="py-0 pb-24">
+      <Section className="pb-24">
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {tools.map((tool) => (
             <div key={tool.id} className="relative group">
               <Link 
                 to={user ? tool.link : '/signin'}
-                className={`block h-full p-8 rounded-3xl border-2 transition-all duration-300 transform hover:-translate-y-2 shadow-sm hover:shadow-xl ${tool.color}`}
+                className={`block h-full p-8 rounded-3xl border-2 transition-all duration-300 transform hover:-translate-y-2 shadow-sm hover:shadow-xl bg-white ${tool.color}`}
               >
-                <div className="bg-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-md">
+                <div className="bg-white w-20 h-20 rounded-2xl flex items-center justify-center mb-8 shadow-lg border border-zinc-100">
                   {tool.icon}
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-zinc-900">{tool.title}</h3>
+                <h3 className="text-2xl font-bold mb-4 text-zinc-900">{tool.title}</h3>
                 <p className="text-zinc-600 font-medium leading-relaxed">
                   {tool.desc}
                 </p>
@@ -80,9 +91,9 @@ const KltureAI: React.FC = () => {
               </Link>
               
               {!user && (
-                 <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] rounded-3xl z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-not-allowed">
-                     <div className="bg-black text-white px-4 py-2 rounded-lg font-bold shadow-lg flex items-center gap-2">
-                        <Lock size={16} /> Login Required
+                 <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] rounded-3xl z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-not-allowed">
+                     <div className="bg-zinc-900 text-white px-5 py-3 rounded-xl font-bold shadow-2xl flex items-center gap-2">
+                        <Lock size={18} /> Login Required
                      </div>
                  </div>
               )}
@@ -95,3 +106,4 @@ const KltureAI: React.FC = () => {
 };
 
 export default KltureAI;
+    

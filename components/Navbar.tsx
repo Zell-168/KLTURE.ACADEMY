@@ -35,37 +35,43 @@ const Navbar: React.FC = () => {
     <nav className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-zinc-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          {/* Logo */}
+          {/* 1. Logo (Left) */}
           <Link to="/" className="flex-shrink-0 flex items-center" onClick={() => setIsOpen(false)}>
              <span className="font-black text-2xl tracking-tighter text-zinc-900">
                 KLTURE<span className="text-red-600">.</span>ACADEMY
             </span>
           </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center space-x-6">
+          {/* 2. Desktop Nav Links (Center) */}
+          <div className="hidden lg:flex items-center space-x-8">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className="text-sm font-medium text-zinc-600 hover:text-black transition-colors"
+                className="text-sm font-bold text-zinc-500 hover:text-black transition-colors"
               >
                 {link.name}
               </Link>
             ))}
+          </div>
 
-            {/* KLTURE.AI Special Link */}
+          {/* 3. Right Side Actions (Right) */}
+          <div className="hidden md:flex items-center gap-5">
+            
+            {/* AI Link */}
             <Link
                 to="/klture-ai"
-                className="flex items-center gap-1.5 text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-purple-600 hover:opacity-80 transition-opacity"
+                className="flex items-center gap-1.5 text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-purple-600 hover:opacity-80 transition-opacity"
             >
-                <Sparkles size={14} className="text-red-500" />
+                <Sparkles size={16} className="text-red-500" />
                 {t.nav.ai}
             </Link>
             
+            <div className="h-5 w-px bg-zinc-200"></div>
+            
             <button 
               onClick={toggleLang}
-              className="flex items-center gap-1 text-sm font-semibold text-zinc-500 hover:text-black border border-zinc-200 px-2 py-1 rounded"
+              className="flex items-center gap-1 text-sm font-bold text-zinc-500 hover:text-black"
             >
               <Globe size={14} />
               {lang === 'en' ? 'KH' : 'EN'}
@@ -75,38 +81,37 @@ const Navbar: React.FC = () => {
               <div className="flex items-center gap-3">
                  {/* Credit Balance Badge */}
                  {!creditLoading && (
-                   <div className="flex items-center gap-1.5 text-zinc-700 font-bold text-sm bg-zinc-50 border border-zinc-200 px-3 py-2 rounded-md">
-                     <Wallet size={16} className="text-green-600" />
+                   <div className="flex items-center gap-1.5 text-zinc-900 font-bold text-sm bg-zinc-100 px-3 py-2 rounded-full border border-zinc-200">
+                     <Wallet size={14} className="text-green-600" />
                      ${creditBalance}
                    </div>
                  )}
 
                  <Link
                   to="/profile"
-                  className="flex items-center gap-2 text-zinc-700 hover:text-black font-semibold text-sm border border-zinc-200 px-4 py-2 rounded-md transition-colors"
+                  className="flex items-center gap-2 text-zinc-700 hover:text-black font-bold text-sm border border-zinc-200 px-4 py-2 rounded-full hover:bg-zinc-50 transition-colors"
                 >
                   <User size={16} />
                   {t.nav.profile}
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-2 text-red-600 hover:text-red-700 font-semibold text-sm border border-red-100 px-3 py-2 rounded-md hover:bg-red-50 transition-colors"
+                  className="flex items-center gap-2 text-red-600 hover:text-red-700 font-bold text-sm border border-red-100 px-3 py-2 rounded-full hover:bg-red-50 transition-colors"
                 >
                   <LogOut size={16} />
-                  {t.nav.signOut}
                 </button>
               </div>
             ) : (
               <div className="flex items-center gap-3">
                 <Link
                   to="/signin"
-                  className="text-zinc-700 hover:text-black font-bold text-sm px-3 py-2"
+                  className="text-zinc-600 hover:text-black font-bold text-sm"
                 >
                   {t.nav.signIn}
                 </Link>
                 <Link
                   to="/contact"
-                  className="bg-red-600 text-white px-5 py-2 rounded-md text-sm font-semibold hover:bg-red-700 transition-colors shadow-lg shadow-red-600/20"
+                  className="bg-black text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-zinc-800 transition-colors shadow-lg shadow-zinc-900/10"
                 >
                   {t.nav.register}
                 </Link>
@@ -219,3 +224,4 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+    
